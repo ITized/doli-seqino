@@ -14,3 +14,4 @@ SeqinoInvalidEnvironment=Environment must be sandbox or production.
 SeqinoInvalidBaseUrl=Sandbox and production URLs must be valid absolute HTTPS URLs.
 SeqinoInvalidTimeout=Timeout must be between 1 and 120 seconds.
 SeqinoInvalidCronBatchSize=Cron batch size must be between 1 and 500.
+SeqinoApiTokenConfigured=****** (configured)

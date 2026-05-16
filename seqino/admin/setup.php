@@ -91,7 +91,11 @@ print '</td></tr>';
 
 print '<tr><td>'.$langs->trans('SeqinoSandboxUrl').'</td><td><input type="text" class="flat minwidth500" name="SEQINO_API_BASE_URL_SANDBOX" value="'.dol_escape_htmltag(getDolGlobalString('SEQINO_API_BASE_URL_SANDBOX')).'"></td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoProductionUrl').'</td><td><input type="text" class="flat minwidth500" name="SEQINO_API_BASE_URL_PRODUCTION" value="'.dol_escape_htmltag(getDolGlobalString('SEQINO_API_BASE_URL_PRODUCTION')).'"></td></tr>';
-print '<tr><td>'.$langs->trans('SeqinoApiToken').'</td><td><input type="password" class="flat minwidth400" name="SEQINO_API_TOKEN" value=""></td></tr>';
+print '<tr><td>'.$langs->trans('SeqinoApiToken').'</td><td><input type="password" class="flat minwidth400" name="SEQINO_API_TOKEN" value="">';
+if (getDolGlobalString('SEQINO_API_TOKEN') !== '') {
+    print '<span class="paddingleftonly">'.$langs->trans('SeqinoApiTokenConfigured').'</span>';
+}
+print '</td></tr>';
 print '<tr><td></td><td><span class="opacitymedium">'.$langs->trans('SeqinoApiTokenOptionalHint').'</span></td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoApiTimeout').'</td><td><input type="number" min="1" max="120" class="flat width75" name="SEQINO_API_TIMEOUT" value="'.((int) getDolGlobalInt('SEQINO_API_TIMEOUT') ?: 30).'"></td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoCronBatchSize').'</td><td><input type="number" min="1" max="500" class="flat width75" name="SEQINO_CRON_BATCH_SIZE" value="'.((int) getDolGlobalInt('SEQINO_CRON_BATCH_SIZE') ?: 50).'"></td></tr>';

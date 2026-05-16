@@ -163,7 +163,7 @@ class modSeqino extends DolibarrModules
             direction varchar(10) NOT NULL,
             payload_type varchar(32) NOT NULL,
             payload_id varchar(64) NOT NULL,
-            payload text NULL,
+            payload json NULL,
             status varchar(20) NOT NULL DEFAULT 'queued',
             retries integer NOT NULL DEFAULT 0,
             external_id varchar(128) NULL,
