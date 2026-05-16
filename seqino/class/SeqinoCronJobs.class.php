@@ -11,6 +11,8 @@ require_once __DIR__.'/api/SeqinoPdpClient.class.php';
  */
 class SeqinoCronJobs
 {
+    private const DEFAULT_BATCH_SIZE = 50;
+
     private DoliDB $db;
 
     public function __construct(DoliDB $db)
@@ -37,7 +39,11 @@ class SeqinoCronJobs
     {
         try {
             $service = $this->buildService();
-            $stats = $service->run($payloadType, 50);
+            $batchSize = function_exists('getDolGlobalInt') ? (int) getDolGlobalInt('SEQINO_CRON_BATCH_SIZE') : self::DEFAULT_BATCH_SIZE;
+            if ($batchSize < 1) {
+                $batchSize = self::DEFAULT_BATCH_SIZE;
+            }
+            $stats = $service->run($payloadType, $batchSize);
 
             if (function_exists('dol_syslog')) {
                 dol_syslog('SeqinoCronJobs '.$payloadType.' processed='.$stats['processed'].' success='.$stats['success'].' error='.$stats['error']);

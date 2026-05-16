@@ -27,18 +27,22 @@ if ($action === 'save') {
     $productionUrl = trim((string) GETPOST('SEQINO_API_BASE_URL_PRODUCTION', 'alphanohtml'));
     $apiToken = trim((string) GETPOST('SEQINO_API_TOKEN', 'alphanohtml'));
     $apiTimeout = (int) GETPOST('SEQINO_API_TIMEOUT', 'int');
+    $cronBatchSize = (int) GETPOST('SEQINO_CRON_BATCH_SIZE', 'int');
 
     if (!in_array($environment, array('sandbox', 'production'), true)) {
         setEventMessages($langs->trans('SeqinoInvalidEnvironment'), null, 'errors');
-    } elseif (!filter_var($sandboxUrl, FILTER_VALIDATE_URL) || !filter_var($productionUrl, FILTER_VALIDATE_URL)) {
+    } elseif (!filter_var($sandboxUrl, FILTER_VALIDATE_URL) || !filter_var($productionUrl, FILTER_VALIDATE_URL) || parse_url($sandboxUrl, PHP_URL_SCHEME) !== 'https' || parse_url($productionUrl, PHP_URL_SCHEME) !== 'https') {
         setEventMessages($langs->trans('SeqinoInvalidBaseUrl'), null, 'errors');
     } elseif ($apiTimeout < 1 || $apiTimeout > 120) {
         setEventMessages($langs->trans('SeqinoInvalidTimeout'), null, 'errors');
+    } elseif ($cronBatchSize < 1 || $cronBatchSize > 500) {
+        setEventMessages($langs->trans('SeqinoInvalidCronBatchSize'), null, 'errors');
     } else {
         dolibarr_set_const($db, 'SEQINO_ENVIRONMENT', $environment, 'chaine', 0, '', $conf->entity);
         dolibarr_set_const($db, 'SEQINO_API_BASE_URL_SANDBOX', $sandboxUrl, 'chaine', 0, '', $conf->entity);
         dolibarr_set_const($db, 'SEQINO_API_BASE_URL_PRODUCTION', $productionUrl, 'chaine', 0, '', $conf->entity);
         dolibarr_set_const($db, 'SEQINO_API_TIMEOUT', (string) $apiTimeout, 'integer', 0, '', $conf->entity);
+        dolibarr_set_const($db, 'SEQINO_CRON_BATCH_SIZE', (string) $cronBatchSize, 'integer', 0, '', $conf->entity);
 
         if ($apiToken !== '') {
             dolibarr_set_const($db, 'SEQINO_API_TOKEN', $apiToken, 'chaine', 0, '', $conf->entity);
@@ -76,7 +80,9 @@ print '</td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoSandboxUrl').'</td><td><input type="text" class="flat minwidth500" name="SEQINO_API_BASE_URL_SANDBOX" value="'.dol_escape_htmltag(getDolGlobalString('SEQINO_API_BASE_URL_SANDBOX')).'"></td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoProductionUrl').'</td><td><input type="text" class="flat minwidth500" name="SEQINO_API_BASE_URL_PRODUCTION" value="'.dol_escape_htmltag(getDolGlobalString('SEQINO_API_BASE_URL_PRODUCTION')).'"></td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoApiToken').'</td><td><input type="password" class="flat minwidth400" name="SEQINO_API_TOKEN" value=""></td></tr>';
+print '<tr><td></td><td><span class="opacitymedium">'.$langs->trans('SeqinoApiTokenOptionalHint').'</span></td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoApiTimeout').'</td><td><input type="number" min="1" max="120" class="flat width75" name="SEQINO_API_TIMEOUT" value="'.((int) getDolGlobalInt('SEQINO_API_TIMEOUT') ?: 30).'"></td></tr>';
+print '<tr><td>'.$langs->trans('SeqinoCronBatchSize').'</td><td><input type="number" min="1" max="500" class="flat width75" name="SEQINO_CRON_BATCH_SIZE" value="'.((int) getDolGlobalInt('SEQINO_CRON_BATCH_SIZE') ?: 50).'"></td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoTokenUsedCount').'</td><td>'.((int) getDolGlobalInt('SEQINO_TOKEN_USED_COUNT')).'</td></tr>';
 print '<tr><td>'.$langs->trans('SeqinoTokenAvailableCount').'</td><td>'.((int) getDolGlobalInt('SEQINO_TOKEN_AVAILABLE_COUNT')).'</td></tr>';
 print '</table>';

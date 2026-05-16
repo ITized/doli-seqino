@@ -84,8 +84,9 @@ class modSeqino extends DolibarrModules
             2 => array('SEQINO_API_BASE_URL_PRODUCTION', 'chaine', 'https://pdp-api.seqino.dev', 'Seqino production API base URL', 0, 'current', $conf->entity),
             3 => array('SEQINO_API_TOKEN', 'chaine', '', 'Seqino PDP API token', 0, 'current', $conf->entity),
             4 => array('SEQINO_API_TIMEOUT', 'integer', '30', 'Seqino API timeout in seconds', 0, 'current', $conf->entity),
-            5 => array('SEQINO_TOKEN_USED_COUNT', 'integer', '0', '1 token = 1 payload accounting usage counter', 0, 'current', $conf->entity),
-            6 => array('SEQINO_TOKEN_AVAILABLE_COUNT', 'integer', '0', 'Token quota snapshot from provider', 0, 'current', $conf->entity),
+            5 => array('SEQINO_CRON_BATCH_SIZE', 'integer', '50', 'Max queue rows processed per cron run', 0, 'current', $conf->entity),
+            6 => array('SEQINO_TOKEN_USED_COUNT', 'integer', '0', '1 token = 1 payload accounting usage counter', 0, 'current', $conf->entity),
+            7 => array('SEQINO_TOKEN_AVAILABLE_COUNT', 'integer', '0', 'Token quota snapshot from provider', 0, 'current', $conf->entity),
         );
 
         $this->tabs = array();

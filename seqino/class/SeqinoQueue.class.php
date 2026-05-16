@@ -10,6 +10,7 @@ class SeqinoQueue
     private const ALLOWED_DIRECTIONS = array('inbound', 'outbound');
 
     private const ALLOWED_TYPES = array('outbound_invoice', 'inbound_invoice', 'e_reporting');
+    private const MAX_ERROR_LENGTH = 1000;
 
     private DoliDB $db;
 
@@ -78,7 +79,7 @@ class SeqinoQueue
 
     public function markError(int $rowid, string $errorMessage): void
     {
-        $errorMessage = mb_substr(trim($errorMessage), 0, 1000);
+        $errorMessage = mb_substr(trim($errorMessage), 0, self::MAX_ERROR_LENGTH);
         $sql = 'UPDATE '.MAIN_DB_PREFIX."seqino_queue SET status = 'error', retries = retries + 1, last_error = '".$this->escape($errorMessage)."' WHERE entity = ".$this->entity.' AND rowid = '.((int) $rowid);
         if (!$this->db->query($sql)) {
             throw new RuntimeException('Unable to mark Seqino queue row in error: '.$this->db->lasterror());
