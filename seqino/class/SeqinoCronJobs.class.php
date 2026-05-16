@@ -39,7 +39,7 @@ class SeqinoCronJobs
     {
         try {
             $service = $this->buildService();
-            $batchSize = function_exists('getDolGlobalInt') ? (int) getDolGlobalInt('SEQINO_CRON_BATCH_SIZE') : self::DEFAULT_BATCH_SIZE;
+            $batchSize = function_exists('getDolGlobalInt') ? getDolGlobalInt('SEQINO_CRON_BATCH_SIZE') : self::DEFAULT_BATCH_SIZE;
             if ($batchSize < 1) {
                 $batchSize = self::DEFAULT_BATCH_SIZE;
             }
@@ -63,7 +63,7 @@ class SeqinoCronJobs
     {
         $environment = function_exists('getDolGlobalString') ? getDolGlobalString('SEQINO_ENVIRONMENT') : 'sandbox';
         $token = function_exists('getDolGlobalString') ? getDolGlobalString('SEQINO_API_TOKEN') : '';
-        $timeout = function_exists('getDolGlobalInt') ? (int) getDolGlobalInt('SEQINO_API_TIMEOUT') : 30;
+        $timeout = function_exists('getDolGlobalInt') ? getDolGlobalInt('SEQINO_API_TIMEOUT') : 30;
 
         $urls = array(
             'sandbox' => function_exists('getDolGlobalString') ? getDolGlobalString('SEQINO_API_BASE_URL_SANDBOX') : '',

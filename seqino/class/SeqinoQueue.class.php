@@ -91,7 +91,7 @@ class SeqinoQueue
     {
         $errorMessage = trim($errorMessage);
         if (strlen($errorMessage) > self::MAX_ERROR_LENGTH) {
-            $errorMessage = substr($errorMessage, 0, self::MAX_ERROR_LENGTH);
+            $errorMessage = substr($errorMessage, 0, self::MAX_ERROR_LENGTH - 12).' [truncated]';
         }
         $sql = 'UPDATE '.MAIN_DB_PREFIX."seqino_queue SET status = 'error', retries = retries + 1, last_error = '".$this->escape($errorMessage)."' WHERE entity = ".$this->entity.' AND rowid = '.((int) $rowid);
         if (!$this->db->query($sql)) {
