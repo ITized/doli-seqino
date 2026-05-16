@@ -1,0 +1,17 @@
+Seqino=Seqino
+SeqinoSetup=Seqino Setup
+SeqinoSetupFoundationOnly=V1 configuration is active: credentials, environment switching, queue counters, and cron-ready processing.
+SeqinoEnvironment=Environment
+SeqinoSandboxUrl=Sandbox URL
+SeqinoProductionUrl=Production URL
+SeqinoApiToken=API token
+SeqinoApiTokenOptionalHint=Leave API token empty to keep the current stored token unchanged.
+SeqinoApiTimeout=API timeout (seconds)
+SeqinoCronBatchSize=Cron batch size
+SeqinoTokenUsedCount=Tokens used
+SeqinoTokenAvailableCount=Tokens available
+SeqinoInvalidEnvironment=Environment must be sandbox or production.
+SeqinoInvalidBaseUrl=Sandbox and production URLs must be valid absolute HTTPS URLs.
+SeqinoInvalidTimeout=Timeout must be between 1 and 120 seconds.
+SeqinoInvalidCronBatchSize=Cron batch size must be between 1 and 500.
+SeqinoApiTokenConfigured=****** (configured)

@@ -1,0 +1,17 @@
+Seqino=Seqino
+SeqinoSetup=Paramétrage Seqino
+SeqinoSetupFoundationOnly=La configuration V1 est active : identifiants, bascule d'environnement, compteurs de jetons et traitement prêt pour les CRON.
+SeqinoEnvironment=Environnement
+SeqinoSandboxUrl=URL Sandbox
+SeqinoProductionUrl=URL Production
+SeqinoApiToken=Jeton API
+SeqinoApiTokenOptionalHint=Laissez le jeton API vide pour conserver le jeton actuellement enregistré.
+SeqinoApiTimeout=Délai API (secondes)
+SeqinoCronBatchSize=Taille de lot CRON
+SeqinoTokenUsedCount=Jetons consommés
+SeqinoTokenAvailableCount=Jetons disponibles
+SeqinoInvalidEnvironment=L'environnement doit être sandbox ou production.
+SeqinoInvalidBaseUrl=Les URL sandbox et production doivent être des URL HTTPS absolues valides.
+SeqinoInvalidTimeout=Le délai doit être compris entre 1 et 120 secondes.
+SeqinoInvalidCronBatchSize=La taille de lot CRON doit être comprise entre 1 et 500.
+SeqinoApiTokenConfigured=****** (configuré)
