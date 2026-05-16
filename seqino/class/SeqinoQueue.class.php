@@ -29,8 +29,18 @@ class SeqinoQueue
     {
         $direction = $this->normalizeDirection($direction);
         $payloadType = $this->normalizeType($payloadType);
+        $escapedPayload = $this->escape($this->encodePayload($payload));
 
-        $sql = 'INSERT INTO '.MAIN_DB_PREFIX."seqino_queue(entity, direction, payload_type, payload_id, payload, status, retries, datec) VALUES (".$this->entity.", '".$this->escape($direction)."', '".$this->escape($payloadType)."', '".$this->escape($payloadId)."', '".$this->escape($this->encodePayload($payload))."', 'queued', 0, '".$this->db->idate(dol_now())."')";
+        $sql = sprintf(
+            "INSERT INTO %sseqino_queue(entity, direction, payload_type, payload_id, payload, status, retries, datec) VALUES (%d, '%s', '%s', '%s', '%s', 'queued', 0, '%s')",
+            MAIN_DB_PREFIX,
+            $this->entity,
+            $this->escape($direction),
+            $this->escape($payloadType),
+            $this->escape($payloadId),
+            $escapedPayload,
+            $this->db->idate(dol_now())
+        );
 
         if (!$this->db->query($sql)) {
             throw new RuntimeException('Unable to enqueue Seqino payload: '.$this->db->lasterror());
@@ -79,7 +89,10 @@ class SeqinoQueue
 
     public function markError(int $rowid, string $errorMessage): void
     {
-        $errorMessage = mb_substr(trim($errorMessage), 0, self::MAX_ERROR_LENGTH);
+        $errorMessage = trim($errorMessage);
+        if (strlen($errorMessage) > self::MAX_ERROR_LENGTH) {
+            $errorMessage = substr($errorMessage, 0, self::MAX_ERROR_LENGTH);
+        }
         $sql = 'UPDATE '.MAIN_DB_PREFIX."seqino_queue SET status = 'error', retries = retries + 1, last_error = '".$this->escape($errorMessage)."' WHERE entity = ".$this->entity.' AND rowid = '.((int) $rowid);
         if (!$this->db->query($sql)) {
             throw new RuntimeException('Unable to mark Seqino queue row in error: '.$this->db->lasterror());

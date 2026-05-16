@@ -12,6 +12,18 @@ if (empty($user->admin)) {
     accessforbidden();
 }
 
+/**
+ * Validate HTTPS absolute URL.
+ */
+function seqinoIsValidHttpsUrl(string $url): bool
+{
+    if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        return false;
+    }
+
+    return parse_url($url, PHP_URL_SCHEME) === 'https';
+}
+
 $action = GETPOST('action', 'aZ09');
 if ($action === 'save') {
     if (!function_exists('newToken') || !function_exists('checkToken')) {
@@ -31,7 +43,7 @@ if ($action === 'save') {
 
     if (!in_array($environment, array('sandbox', 'production'), true)) {
         setEventMessages($langs->trans('SeqinoInvalidEnvironment'), null, 'errors');
-    } elseif (!filter_var($sandboxUrl, FILTER_VALIDATE_URL) || !filter_var($productionUrl, FILTER_VALIDATE_URL) || parse_url($sandboxUrl, PHP_URL_SCHEME) !== 'https' || parse_url($productionUrl, PHP_URL_SCHEME) !== 'https') {
+    } elseif (!seqinoIsValidHttpsUrl($sandboxUrl) || !seqinoIsValidHttpsUrl($productionUrl)) {
         setEventMessages($langs->trans('SeqinoInvalidBaseUrl'), null, 'errors');
     } elseif ($apiTimeout < 1 || $apiTimeout > 120) {
         setEventMessages($langs->trans('SeqinoInvalidTimeout'), null, 'errors');
