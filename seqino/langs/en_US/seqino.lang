@@ -1,6 +1,13 @@
 Seqino=Seqino
 SeqinoSetup=Seqino Setup
-SeqinoSetupFoundationOnly=Configuration UI foundation is ready for secure credentials management and environment switching.
+SeqinoSetupFoundationOnly=V1 configuration is active: credentials, environment switching, queue counters, and cron-ready processing.
 SeqinoEnvironment=Environment
 SeqinoSandboxUrl=Sandbox URL
 SeqinoProductionUrl=Production URL
+SeqinoApiToken=API token
+SeqinoApiTimeout=API timeout (seconds)
+SeqinoTokenUsedCount=Tokens used
+SeqinoTokenAvailableCount=Tokens available
+SeqinoInvalidEnvironment=Environment must be sandbox or production.
+SeqinoInvalidBaseUrl=Sandbox and production URLs must be valid absolute URLs.
+SeqinoInvalidTimeout=Timeout must be between 1 and 120 seconds.

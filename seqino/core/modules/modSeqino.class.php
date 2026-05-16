@@ -31,7 +31,6 @@ if (!defined('NOREQUIREAJAX')) {
     define('NOREQUIREAJAX', '1');
 }
 
-
 require_once DOL_DOCUMENT_ROOT.'/core/modules/DolibarrModules.class.php';
 
 /**
@@ -44,7 +43,7 @@ class modSeqino extends DolibarrModules
      */
     public function __construct($db)
     {
-        global $conf, $langs;
+        global $conf;
 
         $this->db = $db;
 
@@ -54,7 +53,7 @@ class modSeqino extends DolibarrModules
         $this->module_position = 500;
         $this->name = preg_replace('/^mod/i', '', get_class($this));
         $this->description = 'Electronic invoicing integration with Seqino PDP';
-        $this->descriptionlong = 'Open-source V1 foundation for outbound, inbound and e-reporting synchronization with queue-based cron processing.';
+        $this->descriptionlong = 'Open-source V1 for outbound, inbound and e-reporting synchronization with queue + cron workers.';
         $this->editor_name = 'ITized';
         $this->editor_url = 'https://itized.fr';
         $this->version = '1.0.0';
@@ -83,8 +82,10 @@ class modSeqino extends DolibarrModules
             0 => array('SEQINO_ENVIRONMENT', 'chaine', 'sandbox', 'Environment selector (sandbox|production)', 0, 'current', $conf->entity),
             1 => array('SEQINO_API_BASE_URL_SANDBOX', 'chaine', 'https://pdp-sandbox.seqino.dev', 'Seqino sandbox API base URL', 0, 'current', $conf->entity),
             2 => array('SEQINO_API_BASE_URL_PRODUCTION', 'chaine', 'https://pdp-api.seqino.dev', 'Seqino production API base URL', 0, 'current', $conf->entity),
-            3 => array('SEQINO_TOKEN_USED_COUNT', 'integer', '0', '1 token = 1 payload accounting usage counter', 0, 'current', $conf->entity),
-            4 => array('SEQINO_TOKEN_AVAILABLE_COUNT', 'integer', '0', 'Token quota snapshot from provider', 0, 'current', $conf->entity),
+            3 => array('SEQINO_API_TOKEN', 'chaine', '', 'Seqino PDP API token', 0, 'current', $conf->entity),
+            4 => array('SEQINO_API_TIMEOUT', 'integer', '30', 'Seqino API timeout in seconds', 0, 'current', $conf->entity),
+            5 => array('SEQINO_TOKEN_USED_COUNT', 'integer', '0', '1 token = 1 payload accounting usage counter', 0, 'current', $conf->entity),
+            6 => array('SEQINO_TOKEN_AVAILABLE_COUNT', 'integer', '0', 'Token quota snapshot from provider', 0, 'current', $conf->entity),
         );
 
         $this->tabs = array();
@@ -101,6 +102,48 @@ class modSeqino extends DolibarrModules
         $this->rights[$r][0] = 18521202;
         $this->rights[$r][1] = 'Manage Seqino settings and queue';
         $this->rights[$r][4] = 'write';
+
+        $this->cronjobs = array(
+            0 => array(
+                'label' => 'Seqino outbound invoice sync',
+                'jobtype' => 'method',
+                'class' => '/seqino/class/SeqinoCronJobs.class.php',
+                'objectname' => 'SeqinoCronJobs',
+                'method' => 'runOutbound',
+                'parameters' => '',
+                'comment' => 'Queue-based outbound invoice sync to Seqino PDP',
+                'frequency' => 5,
+                'unitfrequency' => 60,
+                'status' => 1,
+                'test' => '$conf->seqino->enabled',
+            ),
+            1 => array(
+                'label' => 'Seqino inbound invoice sync',
+                'jobtype' => 'method',
+                'class' => '/seqino/class/SeqinoCronJobs.class.php',
+                'objectname' => 'SeqinoCronJobs',
+                'method' => 'runInbound',
+                'parameters' => '',
+                'comment' => 'Queue-based inbound vendor invoice draft sync from Seqino PDP',
+                'frequency' => 5,
+                'unitfrequency' => 60,
+                'status' => 1,
+                'test' => '$conf->seqino->enabled',
+            ),
+            2 => array(
+                'label' => 'Seqino e-reporting sync',
+                'jobtype' => 'method',
+                'class' => '/seqino/class/SeqinoCronJobs.class.php',
+                'objectname' => 'SeqinoCronJobs',
+                'method' => 'runEreporting',
+                'parameters' => '',
+                'comment' => 'Queue-based e-reporting payload sync to Seqino PDP',
+                'frequency' => 10,
+                'unitfrequency' => 60,
+                'status' => 1,
+                'test' => '$conf->seqino->enabled',
+            ),
+        );
 
         $this->menu = array();
 
@@ -119,12 +162,15 @@ class modSeqino extends DolibarrModules
             direction varchar(10) NOT NULL,
             payload_type varchar(32) NOT NULL,
             payload_id varchar(64) NOT NULL,
-            payload json NULL,
+            payload text NULL,
             status varchar(20) NOT NULL DEFAULT 'queued',
             retries integer NOT NULL DEFAULT 0,
+            external_id varchar(128) NULL,
             last_error text NULL,
             datec datetime NOT NULL,
-            tms timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            tms timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_seqino_queue_entity_status (entity, status),
+            INDEX idx_seqino_queue_payload_type (payload_type)
         ) ENGINE=innodb";
 
         return $this->_init($sql, $options);

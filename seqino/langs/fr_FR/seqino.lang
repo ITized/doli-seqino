@@ -1,6 +1,13 @@
 Seqino=Seqino
 SeqinoSetup=Paramétrage Seqino
-SeqinoSetupFoundationOnly=La base de l'interface de configuration est prête pour la gestion sécurisée des identifiants et le changement d'environnement.
+SeqinoSetupFoundationOnly=La configuration V1 est active : identifiants, bascule d'environnement, compteurs de jetons et traitement prêt pour les CRON.
 SeqinoEnvironment=Environnement
 SeqinoSandboxUrl=URL Sandbox
 SeqinoProductionUrl=URL Production
+SeqinoApiToken=Jeton API
+SeqinoApiTimeout=Délai API (secondes)
+SeqinoTokenUsedCount=Jetons consommés
+SeqinoTokenAvailableCount=Jetons disponibles
+SeqinoInvalidEnvironment=L'environnement doit être sandbox ou production.
+SeqinoInvalidBaseUrl=Les URL sandbox et production doivent être des URL absolues valides.
+SeqinoInvalidTimeout=Le délai doit être compris entre 1 et 120 secondes.
