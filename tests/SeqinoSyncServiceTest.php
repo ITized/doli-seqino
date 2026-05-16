@@ -21,9 +21,11 @@ final class FakeQueueForSync extends SeqinoQueue
 
     public function fetchQueuedByType(string $payloadType, int $limit = 25): array
     {
-        return array_values(array_filter($this->items, static function (array $item) use ($payloadType): bool {
+        $filtered = array_values(array_filter($this->items, static function (array $item) use ($payloadType): bool {
             return $item['payload_type'] === $payloadType;
         }));
+
+        return array_slice($filtered, 0, max(1, $limit));
     }
 
     public function markDone(int $rowid, string $externalId = ''): void

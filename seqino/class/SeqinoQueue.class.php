@@ -34,7 +34,7 @@ class SeqinoQueue
         $sql = sprintf(
             "INSERT INTO %sseqino_queue(entity, direction, payload_type, payload_id, payload, status, retries, datec) VALUES (%d, '%s', '%s', '%s', '%s', 'queued', 0, '%s')",
             MAIN_DB_PREFIX,
-            $this->entity,
+            (int) $this->entity,
             $this->escape($direction),
             $this->escape($payloadType),
             $this->escape($payloadId),
@@ -57,7 +57,7 @@ class SeqinoQueue
         $payloadType = $this->normalizeType($payloadType);
         $limit = max(1, $limit);
 
-        $sql = 'SELECT rowid, direction, payload_type, payload_id, payload, retries FROM '.MAIN_DB_PREFIX."seqino_queue WHERE entity = ".$this->entity." AND status = 'queued' AND payload_type = '".$this->escape($payloadType)."' ORDER BY datec ASC LIMIT ".$limit;
+        $sql = 'SELECT rowid, direction, payload_type, payload_id, payload, retries FROM '.MAIN_DB_PREFIX."seqino_queue WHERE entity = ".((int) $this->entity)." AND status = 'queued' AND payload_type = '".$this->escape($payloadType)."' ORDER BY datec ASC LIMIT ".$limit;
         $resql = $this->db->query($sql);
         if (!$resql) {
             throw new RuntimeException('Unable to fetch Seqino queue: '.$this->db->lasterror());
@@ -81,7 +81,7 @@ class SeqinoQueue
     public function markDone(int $rowid, string $externalId = ''): void
     {
         $externalIdClause = $externalId !== '' ? ", external_id = '".$this->escape($externalId)."'" : '';
-        $sql = 'UPDATE '.MAIN_DB_PREFIX."seqino_queue SET status = 'done', last_error = NULL".$externalIdClause." WHERE entity = ".$this->entity.' AND rowid = '.((int) $rowid);
+        $sql = 'UPDATE '.MAIN_DB_PREFIX."seqino_queue SET status = 'done', last_error = NULL".$externalIdClause." WHERE entity = ".((int) $this->entity).' AND rowid = '.((int) $rowid);
         if (!$this->db->query($sql)) {
             throw new RuntimeException('Unable to mark Seqino queue row as done: '.$this->db->lasterror());
         }
@@ -93,7 +93,7 @@ class SeqinoQueue
         if (strlen($errorMessage) > self::MAX_ERROR_LENGTH) {
             $errorMessage = substr($errorMessage, 0, self::MAX_ERROR_LENGTH - 12).' [truncated]';
         }
-        $sql = 'UPDATE '.MAIN_DB_PREFIX."seqino_queue SET status = 'error', retries = retries + 1, last_error = '".$this->escape($errorMessage)."' WHERE entity = ".$this->entity.' AND rowid = '.((int) $rowid);
+        $sql = 'UPDATE '.MAIN_DB_PREFIX."seqino_queue SET status = 'error', retries = retries + 1, last_error = '".$this->escape($errorMessage)."' WHERE entity = ".((int) $this->entity).' AND rowid = '.((int) $rowid);
         if (!$this->db->query($sql)) {
             throw new RuntimeException('Unable to mark Seqino queue row in error: '.$this->db->lasterror());
         }
